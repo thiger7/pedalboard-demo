@@ -1,3 +1,7 @@
 pedalboard
 soundfile
 boto3
+matplotlib
+fastapi
+uvicorn[standard]
+python-multipart

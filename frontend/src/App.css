@@ -1,0 +1,294 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a2e;
+  color: #eee;
+}
+
+.app {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.app-header {
+  text-align: center;
+  padding: 1rem 0 2rem;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #fff;
+}
+
+.app-header p {
+  margin: 0.5rem 0 0;
+  color: #888;
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* File Selector */
+.file-selector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #16213e;
+  border-radius: 8px;
+}
+
+.file-selector label {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.file-selector select {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #0f3460;
+  color: #fff;
+  cursor: pointer;
+}
+
+.file-selector .no-files {
+  color: #f87171;
+}
+
+/* Effector Board */
+.effector-board-container {
+  background: #16213e;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.effector-board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.effector-board-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.enabled-count {
+  color: #10b981;
+  font-size: 0.875rem;
+}
+
+.effector-board-hint {
+  margin: 0 0 1rem;
+  color: #888;
+  font-size: 0.875rem;
+}
+
+.effector-board {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+/* Effector Card */
+.effector-card {
+  flex-shrink: 0;
+  width: 100px;
+  background: #0f3460;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.effector-card.enabled {
+  border-color: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.effector-card.disabled {
+  opacity: 0.6;
+}
+
+.effector-drag-handle {
+  cursor: grab;
+  padding: 0.5rem;
+}
+
+.effector-drag-handle:active {
+  cursor: grabbing;
+}
+
+.effector-image {
+  width: 100%;
+  height: 80px;
+  object-fit: contain;
+  background: #1a1a2e;
+  border-radius: 4px;
+}
+
+.effector-info {
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.effector-name {
+  display: block;
+  font-size: 0.7rem;
+  color: #ccc;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.effector-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.effector-toggle input {
+  cursor: pointer;
+}
+
+.effector-toggle span {
+  color: #888;
+}
+
+.effector-card.enabled .effector-toggle span {
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* Process Section */
+.process-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.process-button {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.process-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.process-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #f87171;
+  margin: 0;
+}
+
+/* Audio Section */
+.audio-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .audio-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.audio-player {
+  background: #16213e;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.audio-player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.audio-player-label {
+  font-weight: 600;
+}
+
+.audio-player-time {
+  font-size: 0.875rem;
+  color: #888;
+  font-variant-numeric: tabular-nums;
+}
+
+.audio-player-waveform {
+  background: #0f3460;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  height: 120px;
+  padding-top: 20px;
+}
+
+.audio-player-placeholder {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f3460;
+  border-radius: 4px;
+  color: #666;
+}
+
+.audio-player-controls {
+  display: flex;
+  justify-content: center;
+}
+
+.play-button {
+  padding: 0.5rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  background: #3b82f6;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.play-button:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.play-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
