@@ -18,6 +18,8 @@ class MockLambdaContext:
     aws_request_id: str = "test-request-id"
     log_group_name: str = "/aws/lambda/test"
     log_stream_name: str = "test-stream"
+    identity: None = None
+    client_context: None = None
 
     def get_remaining_time_in_millis(self) -> int:
         return 30000
@@ -121,7 +123,7 @@ class TestHandler:
             "isBase64Encoded": False,
         }
 
-        result = handler(event, MockLambdaContext())
+        result = handler(event, MockLambdaContext())  # type: ignore[arg-type]
         assert result["statusCode"] == 200
         body = json.loads(result["body"])
         assert body["status"] == "ok"
