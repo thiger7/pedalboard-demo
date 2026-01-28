@@ -38,3 +38,4 @@ LICENSE
 Dockerfile
 compose.yaml
 renovate.json
+tsconfig.tsbuildinfo
