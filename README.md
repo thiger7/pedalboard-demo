@@ -43,6 +43,33 @@
 ### 保守
 - **Renovate** - 依存関係の自動更新
 
+## セットアップ
+
+### Docker Compose (推奨)
+
+```bash
+# 起動
+docker compose up --build
+
+# アクセス
+# - フロントエンド: http://localhost:3000
+# - バックエンド API: http://localhost:8000
+```
+
+### ローカル開発
+
+```bash
+# フロントエンド
+cd client
+bun install
+bun dev
+
+# バックエンド
+cd backend
+pip install -r requirements.txt
+make dev
+```
+
 ## エフェクト一覧
 
 | カテゴリ | エフェクト |
