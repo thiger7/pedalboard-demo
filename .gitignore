@@ -32,6 +32,10 @@ Thumbs.db
 # Build
 tsconfig.tsbuildinfo
 
+# Playwright
+playwright-report/
+test-results/
+
 # Python
 __pycache__/
 *.py[cod]
