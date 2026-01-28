@@ -20,7 +20,8 @@ jobs:
         with:
           version: latest
       - name: Run Biome
-        run: biome ci client
+        run: biome ci .
+        working-directory: client
 
   client-typecheck:
     name: Client typecheck
