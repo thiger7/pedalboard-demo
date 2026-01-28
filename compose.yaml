@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build:
@@ -8,14 +6,11 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      # 入力音声ファイル（読み取り専用）
       - ./audio/input:/app/audio/input:ro
-      # 出力音声ファイル（読み書き可能）
       - ./audio/output:/app/audio/output
-      # 開発時のホットリロード用
       - ./backend/lambda_function.py:/app/lambda_function.py:ro
       - ./backend/main.py:/app/main.py:ro
     environment:
-      - PYTHONUNBUFFERED=1
-      - AUDIO_INPUT_DIR=/app/audio/input
-      - AUDIO_OUTPUT_DIR=/app/audio/output
+      PYTHONUNBUFFERED: 1
+      AUDIO_INPUT_DIR: /app/audio/input
+      AUDIO_OUTPUT_DIR: /app/audio/output
