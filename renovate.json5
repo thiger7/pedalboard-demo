@@ -1,0 +1,20 @@
+{
+  "timezone": "Asia/Tokyo",
+  "labels": ["type: dependencies"],
+  "extends": ["config:base"],
+  "dependencyDashboard": true,
+  "packageRules": [
+    {
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true,
+      "automergeSchedule": ["* 00-09 * * *", "* 16-23 * * *"]
+    },
+    {
+      "matchDepTypes": ["dependencies"],
+      "matchUpdateTypes": ["patch", "pin", "digest"],
+      "automerge": true,
+      "automergeSchedule": ["* 00-09 * * *", "* 16-23 * * *"]
+    }
+  ]
+}
