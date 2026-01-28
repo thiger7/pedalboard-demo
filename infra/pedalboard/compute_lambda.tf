@@ -1,11 +1,12 @@
 # Lambda function (container image)
 resource "aws_lambda_function" "processor" {
-  function_name                  = local.lambda_function_name
-  role                           = aws_iam_role.lambda.arn
-  package_type                   = "Image"
-  image_uri                      = "${aws_ecr_repository.lambda.repository_url}:latest"
-  timeout     = var.lambda_timeout
-  memory_size = var.lambda_memory_size
+  function_name = local.lambda_function_name
+  role          = aws_iam_role.lambda.arn
+  package_type  = "Image"
+  image_uri     = "${aws_ecr_repository.lambda.repository_url}:latest"
+  architectures = ["arm64"]
+  timeout       = var.lambda_timeout
+  memory_size   = var.lambda_memory_size
 
   environment {
     variables = {

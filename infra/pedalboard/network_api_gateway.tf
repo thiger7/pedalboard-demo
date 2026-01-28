@@ -19,16 +19,10 @@ resource "aws_apigatewayv2_integration" "lambda" {
   payload_format_version = "2.0"
 }
 
-# Routes
-resource "aws_apigatewayv2_route" "process" {
+# Catch-all route - FastAPI handles routing
+resource "aws_apigatewayv2_route" "default" {
   api_id    = aws_apigatewayv2_api.main.id
-  route_key = "POST /process"
-  target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
-}
-
-resource "aws_apigatewayv2_route" "health" {
-  api_id    = aws_apigatewayv2_api.main.id
-  route_key = "GET /health"
+  route_key = "$default"
   target    = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
