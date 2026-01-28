@@ -6,6 +6,7 @@ export default defineConfig({
     globals: true,
     environment: 'happy-dom',
     passWithNoTests: true,
+    setupFiles: ['./src/test/setup.ts'],
   },
   resolve: {
     alias: {
