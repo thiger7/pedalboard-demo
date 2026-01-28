@@ -6,6 +6,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY lib/ ./lib/
 COPY lambda_function.py .
 
 ## Development stage
@@ -16,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     libatomic1 \
     && rm -rf /var/lib/apt/lists/*
 
+COPY api/ ./api/
 COPY main.py .
 
 RUN mkdir -p /app/audio/input /app/audio/output
@@ -28,6 +30,7 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 FROM public.ecr.aws/lambda/python:3.13 AS lambda
 
 COPY --from=base /usr/local/lib/python3.13/site-packages /var/lang/lib/python3.13/site-packages
+COPY --from=base /app/lib ${LAMBDA_TASK_ROOT}/lib
 COPY --from=base /app/lambda_function.py ${LAMBDA_TASK_ROOT}/
 
 CMD ["lambda_function.handler"]
