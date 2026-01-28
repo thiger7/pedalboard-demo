@@ -29,6 +29,9 @@ Thumbs.db
 *.swp
 *.swo
 
+# Build
+tsconfig.tsbuildinfo
+
 # Logs
 *.log
 
