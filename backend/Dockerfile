@@ -7,6 +7,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY lib/ ./lib/
+COPY api/ ./api/
+COPY main.py .
 COPY lambda_function.py .
 
 ## Development stage
@@ -29,8 +31,13 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 ## Lambda stage
 FROM public.ecr.aws/lambda/python:3.13 AS lambda
 
+# Install required system libraries for Pedalboard
+RUN dnf install -y libatomic libsndfile && dnf clean all
+
 COPY --from=base /usr/local/lib/python3.13/site-packages /var/lang/lib/python3.13/site-packages
 COPY --from=base /app/lib ${LAMBDA_TASK_ROOT}/lib
+COPY --from=base /app/api ${LAMBDA_TASK_ROOT}/api
+COPY --from=base /app/main.py ${LAMBDA_TASK_ROOT}/
 COPY --from=base /app/lambda_function.py ${LAMBDA_TASK_ROOT}/
 
 CMD ["lambda_function.handler"]
