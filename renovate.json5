@@ -9,8 +9,12 @@
   },
   "packageRules": [
     {
-      "matchUpdateTypes": ["major", "minor", "patch"],
+      "matchManagers": ["npm", "github-actions"],
       "automerge": true
+    },
+    {
+      "matchManagers": ["terraform", "pip_requirements", "dockerfile-image"],
+      "automerge": false
     }
   ]
 }
