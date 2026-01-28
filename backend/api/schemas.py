@@ -23,3 +23,33 @@ class ProcessResponse(BaseModel):
     effects_applied: list[str]
     input_normalized: str
     output_normalized: str
+
+
+# S3 Upload schemas
+class UploadUrlRequest(BaseModel):
+    """アップロードURL生成リクエスト"""
+
+    filename: str
+    content_type: str = "audio/wav"
+
+
+class UploadUrlResponse(BaseModel):
+    """アップロードURL生成レスポンス"""
+
+    upload_url: str
+    s3_key: str
+
+
+class S3ProcessRequest(BaseModel):
+    """S3音声処理リクエスト"""
+
+    s3_key: str
+    effect_chain: list[EffectConfig]
+
+
+class S3ProcessResponse(BaseModel):
+    """S3音声処理レスポンス"""
+
+    output_key: str
+    download_url: str
+    effects_applied: list[str]

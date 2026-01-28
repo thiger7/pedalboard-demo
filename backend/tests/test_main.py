@@ -1,3 +1,6 @@
+import os
+from unittest.mock import MagicMock, patch
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -13,11 +16,36 @@ def client():
 class TestHealthCheck:
     """ヘルスチェックのテスト"""
 
-    def test_health_check_returns_ok(self, client):
-        """ヘルスチェックが ok を返す"""
+    def test_health_check_returns_ok_with_local_mode(self, client):
+        """ヘルスチェックが ok と local モードを返す"""
         response = client.get("/api/health")
         assert response.status_code == 200
-        assert response.json() == {"status": "ok"}
+        data = response.json()
+        assert data["status"] == "ok"
+        assert data["mode"] == "local"
+
+    def test_health_check_returns_s3_mode_in_production(self, client):
+        """本番環境では s3 モードを返す"""
+        with patch.dict(os.environ, {"ENV": "production"}):
+            # config を再読み込み
+            import importlib
+
+            from api import config
+
+            importlib.reload(config)
+            # routes も再読み込み
+            from api import routes
+
+            importlib.reload(routes)
+
+            response = client.get("/api/health")
+            data = response.json()
+            assert data["mode"] == "s3"
+
+            # 元に戻す
+            with patch.dict(os.environ, {"ENV": "development"}):
+                importlib.reload(config)
+                importlib.reload(routes)
 
 
 class TestEffects:
@@ -71,3 +99,73 @@ class TestAudioEndpoints:
         """存在しない正規化ファイルは 404 を返す"""
         response = client.get("/api/normalized/nonexistent.wav")
         assert response.status_code == 404
+
+
+class TestS3UploadUrl:
+    """S3 アップロード URL 生成のテスト"""
+
+    def test_upload_url_fails_without_bucket(self, client):
+        """S3 バケットが設定されていない場合は 500 を返す"""
+        response = client.post(
+            "/api/upload-url",
+            json={"filename": "test.wav", "content_type": "audio/wav"},
+        )
+        assert response.status_code == 500
+        assert "S3 bucket not configured" in response.json()["detail"]
+
+    def test_upload_url_success_with_bucket(self, client):
+        """S3 バケットが設定されている場合は URL を返す"""
+        mock_s3 = MagicMock()
+        mock_s3.generate_presigned_url.return_value = "https://s3.example.com/upload"
+
+        with (
+            patch("api.routes.S3_BUCKET", "test-bucket"),
+            patch("api.routes.get_s3_client", return_value=mock_s3),
+        ):
+            response = client.post(
+                "/api/upload-url",
+                json={"filename": "test.wav", "content_type": "audio/wav"},
+            )
+            assert response.status_code == 200
+            data = response.json()
+            assert "upload_url" in data
+            assert "s3_key" in data
+            assert data["s3_key"].startswith("input/")
+            assert data["s3_key"].endswith(".wav")
+
+
+class TestS3DownloadUrl:
+    """S3 ダウンロード URL 生成のテスト"""
+
+    def test_download_url_fails_without_bucket(self, client):
+        """S3 バケットが設定されていない場合は 500 を返す"""
+        response = client.get("/api/download-url/output/test.wav")
+        assert response.status_code == 500
+        assert "S3 bucket not configured" in response.json()["detail"]
+
+    def test_download_url_success_with_bucket(self, client):
+        """S3 バケットが設定されている場合は URL を返す"""
+        mock_s3 = MagicMock()
+        mock_s3.generate_presigned_url.return_value = "https://s3.example.com/download"
+
+        with (
+            patch("api.routes.S3_BUCKET", "test-bucket"),
+            patch("api.routes.get_s3_client", return_value=mock_s3),
+        ):
+            response = client.get("/api/download-url/output/test.wav")
+            assert response.status_code == 200
+            data = response.json()
+            assert data["download_url"] == "https://s3.example.com/download"
+
+
+class TestS3Process:
+    """S3 音声処理のテスト"""
+
+    def test_s3_process_fails_without_bucket(self, client):
+        """S3 バケットが設定されていない場合は 500 を返す"""
+        response = client.post(
+            "/api/s3-process",
+            json={"s3_key": "input/test.wav", "effect_chain": []},
+        )
+        assert response.status_code == 500
+        assert "S3 bucket not configured" in response.json()["detail"]

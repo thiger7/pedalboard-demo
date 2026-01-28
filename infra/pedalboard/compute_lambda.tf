@@ -10,6 +10,7 @@ resource "aws_lambda_function" "processor" {
   environment {
     variables = {
       AUDIO_BUCKET = aws_s3_bucket.audio.id
+      ENV          = "production"
     }
   }
 

@@ -30,3 +30,20 @@ export interface AvailableEffect {
   default_params: Record<string, number>;
   class_name: string;
 }
+
+// S3 Upload types
+export interface UploadUrlResponse {
+  upload_url: string;
+  s3_key: string;
+}
+
+export interface S3ProcessRequest {
+  s3_key: string;
+  effect_chain: EffectConfig[];
+}
+
+export interface S3ProcessResponse {
+  output_key: string;
+  download_url: string;
+  effects_applied: string[];
+}

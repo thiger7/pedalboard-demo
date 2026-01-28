@@ -1,13 +1,19 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import type { Mock } from 'vitest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useAudioProcessor, useInputFiles } from './useAudioProcessor';
+import {
+  useAppMode,
+  useAudioProcessor,
+  useInputFiles,
+  useS3Upload,
+} from './useAudioProcessor';
 
 vi.mock('axios', () => ({
   default: {
     post: vi.fn(),
     get: vi.fn(),
+    put: vi.fn(),
     isAxiosError: vi.fn(),
   },
 }));
@@ -121,5 +127,127 @@ describe('useInputFiles', () => {
 
     expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
+  });
+});
+
+describe('useAppMode', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('health エンドポイントから local モードを取得する', async () => {
+    (axios.get as Mock).mockResolvedValueOnce({
+      data: { status: 'ok', mode: 'local' },
+    });
+
+    const { result } = renderHook(() => useAppMode());
+
+    expect(result.current.isLoading).toBe(true);
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.mode).toBe('local');
+  });
+
+  it('health エンドポイントから s3 モードを取得する', async () => {
+    (axios.get as Mock).mockResolvedValueOnce({
+      data: { status: 'ok', mode: 's3' },
+    });
+
+    const { result } = renderHook(() => useAppMode());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.mode).toBe('s3');
+  });
+
+  it('エラー時は local モードにフォールバックする', async () => {
+    (axios.get as Mock).mockRejectedValueOnce(new Error('Network error'));
+
+    const { result } = renderHook(() => useAppMode());
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.mode).toBe('local');
+  });
+});
+
+describe('useS3Upload', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('ファイルを正常にアップロードする', async () => {
+    (axios.post as Mock).mockResolvedValueOnce({
+      data: {
+        upload_url: 'https://s3.example.com/upload',
+        s3_key: 'input/abc.wav',
+      },
+    });
+    (axios.put as Mock).mockResolvedValueOnce({});
+
+    const { result } = renderHook(() => useS3Upload());
+
+    const file = new File(['audio data'], 'test.wav', { type: 'audio/wav' });
+
+    let s3Key: string | null = null;
+    await act(async () => {
+      s3Key = await result.current.uploadFile(file);
+    });
+
+    expect(s3Key).toBe('input/abc.wav');
+    expect(result.current.uploadedKey).toBe('input/abc.wav');
+    expect(result.current.isUploading).toBe(false);
+  });
+
+  it('アップロードエラーを処理する', async () => {
+    (axios.post as Mock).mockRejectedValueOnce({
+      isAxiosError: true,
+      response: { data: { detail: 'Upload failed' } },
+    });
+
+    const { result } = renderHook(() => useS3Upload());
+
+    const file = new File(['audio data'], 'test.wav', { type: 'audio/wav' });
+
+    let s3Key: string | null = null;
+    await act(async () => {
+      s3Key = await result.current.uploadFile(file);
+    });
+
+    expect(s3Key).toBeNull();
+    expect(result.current.uploadError).toBeTruthy();
+  });
+
+  it('アップロード状態をクリアする', async () => {
+    (axios.post as Mock).mockResolvedValueOnce({
+      data: {
+        upload_url: 'https://s3.example.com/upload',
+        s3_key: 'input/abc.wav',
+      },
+    });
+    (axios.put as Mock).mockResolvedValueOnce({});
+
+    const { result } = renderHook(() => useS3Upload());
+
+    const file = new File(['audio data'], 'test.wav', { type: 'audio/wav' });
+
+    await act(async () => {
+      await result.current.uploadFile(file);
+    });
+
+    expect(result.current.uploadedKey).toBe('input/abc.wav');
+
+    act(() => {
+      result.current.clearUpload();
+    });
+
+    expect(result.current.uploadedKey).toBeNull();
   });
 });

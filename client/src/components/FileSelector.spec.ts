@@ -8,6 +8,7 @@ describe('FileSelector', () => {
   it('ローディング中は Loading... を表示する', () => {
     render(
       createElement(FileSelector, {
+        mode: 'local',
         files: [],
         selectedFile: '',
         onSelect: vi.fn(),
@@ -20,6 +21,7 @@ describe('FileSelector', () => {
   it('ファイルがない場合はメッセージを表示する', () => {
     render(
       createElement(FileSelector, {
+        mode: 'local',
         files: [],
         selectedFile: '',
         onSelect: vi.fn(),
@@ -35,6 +37,7 @@ describe('FileSelector', () => {
     const files = ['test1.wav', 'test2.wav'];
     render(
       createElement(FileSelector, {
+        mode: 'local',
         files,
         selectedFile: '',
         onSelect: vi.fn(),
@@ -53,6 +56,7 @@ describe('FileSelector', () => {
 
     render(
       createElement(FileSelector, {
+        mode: 'local',
         files,
         selectedFile: '',
         onSelect,
