@@ -1,10 +1,10 @@
-# Pedalboard Demo
+# Pedalboard App
 
 ギターエフェクターをシミュレートする Web アプリケーション。
 
 ## 概要
 
-ブラウザ上でギターエフェクターを並べ替え、音声ファイルにエフェクトを適用できるデモアプリです。
+ブラウザ上でギターエフェクターを並べ替え、音声ファイルにエフェクトを適用できるアプリです。
 
 ![Application Screenshot](docs/application_image.png)
 

@@ -18,7 +18,7 @@ async function mockLocalMode(page: import('@playwright/test').Page) {
   });
 }
 
-test.describe('Pedalboard Demo App', () => {
+test.describe('Pedalboard App', () => {
   test.beforeEach(async ({ page }) => {
     await mockLocalMode(page);
     await page.goto('/');
