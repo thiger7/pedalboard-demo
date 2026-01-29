@@ -44,7 +44,7 @@ jobs:
       - name: Setup & Install
         uses: ./.github/actions/setup-bun-install
       - name: Run tests
-        run: bun run vitest
+        run: bun run vitest:run
         working-directory: client
 
   backend-quality:
