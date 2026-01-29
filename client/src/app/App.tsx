@@ -17,6 +17,7 @@ function App() {
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [inputAudioUrl, setInputAudioUrl] = useState<string | null>(null);
   const [outputAudioUrl, setOutputAudioUrl] = useState<string | null>(null);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const inputPlayerRef = useRef<AudioPlayerHandle>(null);
   const outputPlayerRef = useRef<AudioPlayerHandle>(null);
 
@@ -24,6 +25,7 @@ function App() {
   const {
     processAudio,
     processS3Audio,
+    getAudioUrl,
     getNormalizedAudioUrl,
     isProcessing,
     error,
@@ -39,6 +41,7 @@ function App() {
     // 再生中のプレイヤーを停止
     inputPlayerRef.current?.pause();
     outputPlayerRef.current?.pause();
+    setDownloadUrl(null);
 
     const enabledEffects = effects.filter((e) => e.enabled);
     if (enabledEffects.length === 0) {
@@ -53,10 +56,15 @@ function App() {
         return;
       }
 
-      const result = await processS3Audio(uploadedKey, effectsToChain(effects));
+      const result = await processS3Audio(
+        uploadedKey,
+        effectsToChain(effects),
+        uploadedFileName ?? undefined,
+      );
       if (result) {
         setInputAudioUrl(result.input_normalized_url);
         setOutputAudioUrl(result.output_normalized_url);
+        setDownloadUrl(result.download_url);
       }
     } else {
       // Local mode
@@ -73,6 +81,7 @@ function App() {
       if (result) {
         setInputAudioUrl(getNormalizedAudioUrl(result.input_normalized));
         setOutputAudioUrl(getNormalizedAudioUrl(result.output_normalized));
+        setDownloadUrl(getAudioUrl(result.output_file));
       }
     }
   };
@@ -153,6 +162,17 @@ function App() {
             />
           </div>
         </section>
+
+        {downloadUrl && (
+          <section className="output-section">
+            <div className="file-selector">
+              <span className="file-selector-label">Output File:</span>
+              <a href={downloadUrl} download className="download-link">
+                Download
+              </a>
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );

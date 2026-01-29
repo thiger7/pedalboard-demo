@@ -210,6 +210,36 @@ describe('processS3Audio', () => {
     });
   });
 
+  it('original_filename をリクエストに含める', async () => {
+    const mockResponseData = {
+      output_key: 'output/abc.wav',
+      download_url: 'https://s3.example.com/guitar_abc12345.wav',
+      effects_applied: ['reverb'],
+      input_normalized_url: 'https://s3.example.com/input_norm.wav',
+      output_normalized_url: 'https://s3.example.com/output_norm.wav',
+    };
+    (axios.post as Mock).mockResolvedValueOnce({ data: mockResponseData });
+
+    const { result } = renderHook(() => useAudioProcessor());
+
+    await act(async () => {
+      await result.current.processS3Audio(
+        'input/test.wav',
+        [{ name: 'reverb' }],
+        'guitar.wav',
+      );
+    });
+
+    expect(axios.post).toHaveBeenCalledWith(
+      expect.stringContaining('/api/s3-process'),
+      {
+        s3_key: 'input/test.wav',
+        effect_chain: [{ name: 'reverb' }],
+        original_filename: 'guitar.wav',
+      },
+    );
+  });
+
   it('エラー時にエラーメッセージを設定する', async () => {
     (axios.post as Mock).mockRejectedValueOnce(new Error('Network Error'));
     (axios.isAxiosError as unknown as Mock).mockReturnValue(false);

@@ -55,7 +55,8 @@ body {
   border: 1px solid #444;
 }
 
-.file-selector label {
+.file-selector label,
+.file-selector-label {
   font-weight: 600;
   font-size: 0.875rem;
   white-space: nowrap;
@@ -337,6 +338,32 @@ body {
   color: #ddd;
 }
 
+.output-section {
+  margin-top: 0.5rem;
+}
+
+.download-link {
+  display: inline-block;
+  padding: 0.6rem 2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 8px;
+  background: #444;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 400px;
+}
+
+.download-link:hover {
+  background: #555;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(68, 68, 68, 0.4);
+}
+
 .audio-section {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -501,7 +528,8 @@ body {
     gap: 0.5rem;
   }
 
-  .file-selector label {
+  .file-selector label,
+  .file-selector-label {
     text-align: center;
   }
 
@@ -526,8 +554,14 @@ body {
     grid-template-columns: 1fr 1fr;
   }
 
-  .process-button {
+  .process-button,
+  .download-link {
     width: 80%;
+    min-width: unset;
+  }
+
+  .output-section .file-selector {
+    align-items: center;
   }
 }
 
@@ -560,7 +594,8 @@ body {
     padding: 0.4rem 0.5rem;
   }
 
-  .file-selector label {
+  .file-selector label,
+  .file-selector-label {
     text-align: center;
     font-size: 0.8rem;
   }
@@ -595,10 +630,15 @@ body {
     padding: 0.4rem 0.5rem;
   }
 
-  .process-button {
+  .process-button,
+  .download-link {
     width: 80%;
     min-width: unset;
     padding: 0.5rem;
+  }
+
+  .output-section .file-selector {
+    align-items: center;
   }
 
   .play-button {
@@ -635,7 +675,8 @@ body {
     padding: 0.35rem 0.4rem;
   }
 
-  .file-selector label {
+  .file-selector label,
+  .file-selector-label {
     text-align: center;
     font-size: 0.75rem;
   }
@@ -699,11 +740,16 @@ body {
     gap: 0.2rem;
   }
 
-  .process-button {
+  .process-button,
+  .download-link {
     width: 80%;
     min-width: unset;
     padding: 0.45rem;
     font-size: 0.8rem;
+  }
+
+  .output-section .file-selector {
+    align-items: center;
   }
 
   .audio-section {

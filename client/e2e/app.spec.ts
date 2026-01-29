@@ -95,7 +95,17 @@ test.describe('エフェクト操作', () => {
 });
 
 test.describe('音声処理フロー (Local Mode)', () => {
-  test('ファイル選択後に処理を実行できる', async ({ page }) => {
+  test('処理前はダウンロードセクションが表示されない', async ({ page }) => {
+    await mockLocalMode(page);
+    await page.goto('/');
+
+    const outputSection = page.locator('.output-section');
+    await expect(outputSection).not.toBeVisible();
+  });
+
+  test('ファイル選択後に処理を実行し、ダウンロードリンクが表示される', async ({
+    page,
+  }) => {
     await mockLocalMode(page);
 
     // Process エンドポイントをモック
@@ -146,11 +156,24 @@ test.describe('音声処理フロー (Local Mode)', () => {
       await expect(processButton).toBeEnabled();
       await processButton.click();
 
-      // Wait for processing to complete (モックのため即座に完了する可能性がある)
+      // Wait for processing to complete
       await expect(processButton).toHaveText('Apply Effects', {
         timeout: 10000,
       });
       await expect(processButton).toBeEnabled();
+
+      // ダウンロードセクションが表示される
+      const outputSection = page.locator('.output-section');
+      await expect(outputSection).toBeVisible();
+
+      // ダウンロードリンクが正しい href を持つ
+      const downloadLink = page.locator('.download-link');
+      await expect(downloadLink).toBeVisible();
+      await expect(downloadLink).toHaveAttribute(
+        'href',
+        /\/api\/audio\/output\.wav/,
+      );
+      await expect(downloadLink).toHaveAttribute('download', '');
     }
   });
 });
@@ -186,7 +209,9 @@ test.describe('S3 モード (モック)', () => {
     await expect(button).toBeDisabled();
   });
 
-  test('ファイルアップロードと処理のフロー', async ({ page }) => {
+  test('ファイルアップロードと処理のフロー、ダウンロードリンクが表示される', async ({
+    page,
+  }) => {
     // Upload URL エンドポイントをモック
     await page.route('**/api/upload-url', async (route) => {
       await route.fulfill({
@@ -250,8 +275,21 @@ test.describe('S3 モード (モック)', () => {
     // 処理を実行
     await processButton.click();
 
-    // 処理完了を待つ（モックのため処理は即座に完了する可能性がある）
+    // 処理完了を待つ
     await expect(processButton).toHaveText('Apply Effects', { timeout: 10000 });
     await expect(processButton).toBeEnabled();
+
+    // ダウンロードセクションが表示される
+    const outputSection = page.locator('.output-section');
+    await expect(outputSection).toBeVisible();
+
+    // ダウンロードリンクが S3 URL を持つ
+    const downloadLink = page.locator('.download-link');
+    await expect(downloadLink).toBeVisible();
+    await expect(downloadLink).toHaveAttribute(
+      'href',
+      'https://s3.example.com/output.wav',
+    );
+    await expect(downloadLink).toHaveAttribute('download', '');
   });
 });

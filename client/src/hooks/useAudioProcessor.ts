@@ -81,6 +81,7 @@ export function useAudioProcessor() {
     async (
       s3Key: string,
       effectChain: EffectConfig[],
+      originalFilename?: string,
     ): Promise<S3ProcessResponse | null> => {
       setIsProcessing(true);
       setError(null);
@@ -88,7 +89,11 @@ export function useAudioProcessor() {
       try {
         const response = await axios.post<S3ProcessResponse>(
           `${API_BASE_URL}/api/s3-process`,
-          { s3_key: s3Key, effect_chain: effectChain },
+          {
+            s3_key: s3Key,
+            effect_chain: effectChain,
+            original_filename: originalFilename,
+          },
         );
         setS3Result(response.data);
         return response.data;
