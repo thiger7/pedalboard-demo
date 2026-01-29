@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import type {
   EffectConfig,
   ProcessRequest,
@@ -14,25 +14,36 @@ export type AppMode = 'local' | 's3' | 'unknown';
 
 export function useAppMode() {
   const [mode, setMode] = useState<AppMode>('unknown');
+  const [files, setFiles] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
 
-  useEffect(() => {
-    const checkMode = async () => {
+  if (!initialized) {
+    setInitialized(true);
+    (async () => {
       try {
         const response = await axios.get<{ status: string; mode: AppMode }>(
           `${API_BASE_URL}/api/health`,
         );
-        setMode(response.data.mode);
+        const detectedMode = response.data.mode;
+        setMode(detectedMode);
+
+        // local モードなら files も取得
+        if (detectedMode === 'local') {
+          const filesResponse = await axios.get<{ files: string[] }>(
+            `${API_BASE_URL}/api/input-files`,
+          );
+          setFiles(filesResponse.data.files);
+        }
       } catch {
-        setMode('local'); // fallback to local mode
+        setMode('local');
       } finally {
         setIsLoading(false);
       }
-    };
-    checkMode();
-  }, []);
+    })();
+  }
 
-  return { mode, isLoading };
+  return { mode, files, isLoading };
 }
 
 export function useAudioProcessor() {

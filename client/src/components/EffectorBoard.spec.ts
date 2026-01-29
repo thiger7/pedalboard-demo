@@ -11,6 +11,7 @@ vi.mock('@dnd-kit/core', () => ({
   closestCenter: vi.fn(),
   KeyboardSensor: vi.fn(),
   PointerSensor: vi.fn(),
+  TouchSensor: vi.fn(),
   useSensor: vi.fn(),
   useSensors: vi.fn(() => []),
 }));
@@ -24,6 +25,7 @@ vi.mock('@dnd-kit/sortable', () => ({
     return result;
   }),
   horizontalListSortingStrategy: vi.fn(),
+  rectSortingStrategy: vi.fn(),
   sortableKeyboardCoordinates: vi.fn(),
   useSortable: vi.fn(() => ({
     attributes: {},
@@ -47,6 +49,7 @@ const createMockEffects = (): Effect[] => [
   {
     id: 'chorus-1',
     name: 'Chorus',
+    apiName: 'Chorus',
     image: '/images/chorus.png',
     enabled: true,
     params: {},
@@ -55,6 +58,7 @@ const createMockEffects = (): Effect[] => [
   {
     id: 'delay-1',
     name: 'Delay',
+    apiName: 'Delay',
     image: '/images/delay.png',
     enabled: false,
     params: {},
@@ -63,6 +67,7 @@ const createMockEffects = (): Effect[] => [
   {
     id: 'reverb-1',
     name: 'Reverb',
+    apiName: 'Reverb',
     image: '/images/reverb.png',
     enabled: true,
     params: {},
@@ -140,7 +145,7 @@ describe('EffectorBoard', () => {
     expect(screen.getByText('Reverb')).toBeInTheDocument();
   });
 
-  it('トグルクリック時に onEffectsChange が呼ばれる', async () => {
+  it('カードクリック時に onEffectsChange が呼ばれる', async () => {
     const user = userEvent.setup();
     const onEffectsChange = vi.fn();
     const effects = createMockEffects();
@@ -152,8 +157,8 @@ describe('EffectorBoard', () => {
       }),
     );
 
-    const checkboxes = screen.getAllByRole('checkbox');
-    await user.click(checkboxes[0]); // Chorus をクリック
+    const cards = screen.getAllByRole('button');
+    await user.click(cards[0]); // Chorus をクリック
 
     expect(onEffectsChange).toHaveBeenCalled();
     const newEffects = onEffectsChange.mock.calls[0][0];

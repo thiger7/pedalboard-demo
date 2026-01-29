@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
-import { AudioPlayer } from '../components/AudioPlayer';
+import { useRef, useState } from 'react';
+import { AudioPlayer, type AudioPlayerHandle } from '../components/AudioPlayer';
 import { EffectorBoard } from '../components/EffectorBoard';
 import { FileSelector } from '../components/FileSelector';
 import {
   useAppMode,
   useAudioProcessor,
-  useInputFiles,
   useS3Upload,
 } from '../hooks/useAudioProcessor';
 import type { Effect } from '../types/effects';
@@ -18,9 +17,10 @@ function App() {
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [inputAudioUrl, setInputAudioUrl] = useState<string | null>(null);
   const [outputAudioUrl, setOutputAudioUrl] = useState<string | null>(null);
+  const inputPlayerRef = useRef<AudioPlayerHandle>(null);
+  const outputPlayerRef = useRef<AudioPlayerHandle>(null);
 
-  const { mode, isLoading: isModeLoading } = useAppMode();
-  const { files, isLoading: isLoadingFiles, fetchFiles } = useInputFiles();
+  const { mode, files, isLoading: isModeLoading } = useAppMode();
   const {
     processAudio,
     processS3Audio,
@@ -30,18 +30,16 @@ function App() {
   } = useAudioProcessor();
   const { uploadFile, isUploading, uploadedKey, uploadError } = useS3Upload();
 
-  useEffect(() => {
-    if (mode === 'local') {
-      fetchFiles();
-    }
-  }, [mode, fetchFiles]);
-
   const handleFileUpload = async (file: File) => {
     setUploadedFileName(file.name);
     await uploadFile(file);
   };
 
   const handleProcess = async () => {
+    // 再生中のプレイヤーを停止
+    inputPlayerRef.current?.pause();
+    outputPlayerRef.current?.pause();
+
     const enabledEffects = effects.filter((e) => e.enabled);
     if (enabledEffects.length === 0) {
       alert('Please enable at least one effect');
@@ -93,7 +91,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Pedalboard Demo</h1>
+        <h1>Pedalboard</h1>
         <p>Guitar Effect Simulator</p>
       </header>
 
@@ -112,7 +110,7 @@ function App() {
               files={files}
               selectedFile={selectedFile}
               onSelect={setSelectedFile}
-              isLoading={isLoadingFiles}
+              isLoading={isModeLoading}
             />
           )}
           {uploadError && <p className="error-message">{uploadError}</p>}
@@ -129,18 +127,31 @@ function App() {
             disabled={isProcessing || !isReady}
             className="process-button"
           >
-            {isProcessing ? 'Processing...' : 'Process Audio'}
+            {isProcessing ? 'Applying...' : 'Apply Effects'}
           </button>
           {error && <p className="error-message">{error}</p>}
         </section>
 
-        <section className="audio-section">
-          <AudioPlayer label="Input" audioUrl={inputAudioUrl} color="#3b82f6" />
-          <AudioPlayer
-            label="Output"
-            audioUrl={outputAudioUrl}
-            color="#10b981"
-          />
+        <section className="audio-section-container">
+          <div className="audio-section-header">
+            <h2>Waveform</h2>
+          </div>
+          <div className="audio-section">
+            <AudioPlayer
+              ref={inputPlayerRef}
+              label="Input"
+              audioUrl={inputAudioUrl}
+              color="#3b82f6"
+              onPlay={() => outputPlayerRef.current?.pause()}
+            />
+            <AudioPlayer
+              ref={outputPlayerRef}
+              label="Output"
+              audioUrl={outputAudioUrl}
+              color="#10b981"
+              onPlay={() => inputPlayerRef.current?.pause()}
+            />
+          </div>
         </section>
       </main>
     </div>

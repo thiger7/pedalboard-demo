@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   createInitialEffects,
   DEFAULT_PARAMS,
+  EFFECT_DISPLAY_NAMES,
   EFFECT_IMAGES,
   effectsToChain,
 } from './effectsMapping';
@@ -22,8 +23,19 @@ describe('effectsMapping', () => {
 
     it('各エフェクトにデフォルトパラメータが設定される', () => {
       const effects = createInitialEffects();
-      const booster = effects.find((e) => e.name === 'Booster_Preamp');
+      const booster = effects.find((e) => e.apiName === 'Booster_Preamp');
       expect(booster?.params).toEqual(DEFAULT_PARAMS.Booster_Preamp);
+    });
+
+    it('表示名とAPI名が正しく設定される', () => {
+      const effects = createInitialEffects();
+      const booster = effects.find((e) => e.apiName === 'Booster_Preamp');
+      expect(booster?.name).toBe(EFFECT_DISPLAY_NAMES.Booster_Preamp);
+      expect(booster?.apiName).toBe('Booster_Preamp');
+
+      const superOD = effects.find((e) => e.apiName === 'SUPER OverDrive');
+      expect(superOD?.name).toBe(EFFECT_DISPLAY_NAMES['SUPER OverDrive']);
+      expect(superOD?.apiName).toBe('SUPER OverDrive');
     });
 
     it('各エフェクトに一意のIDが設定される', () => {
@@ -50,13 +62,15 @@ describe('effectsMapping', () => {
       expect(chain).toEqual([]);
     });
 
-    it('エフェクト名とパラメータを含む', () => {
+    it('API名（apiName）とパラメータを含む', () => {
       const effects = createInitialEffects();
       effects[0].enabled = true;
 
       const chain = effectsToChain(effects);
       expect(chain[0]).toHaveProperty('name');
       expect(chain[0]).toHaveProperty('params');
+      // API用の名前はapiNameフィールドから取得される
+      expect(chain[0].name).toBe(effects[0].apiName);
     });
   });
 });

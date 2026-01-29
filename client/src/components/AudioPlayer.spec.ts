@@ -3,17 +3,13 @@ import { createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { AudioPlayer } from './AudioPlayer';
 
-// WaveSurfer のモック
-vi.mock('wavesurfer.js', () => ({
-  default: {
-    create: vi.fn(() => ({
-      load: vi.fn(),
-      destroy: vi.fn(),
-      on: vi.fn(),
-      playPause: vi.fn(),
-      getDuration: vi.fn(() => 0),
-    })),
-  },
+// @wavesurfer/react のモック
+vi.mock('@wavesurfer/react', () => ({
+  default: vi.fn(({ url }: { url: string | null }) => {
+    // WavesurferPlayer コンポーネントのモック
+    if (!url) return null;
+    return createElement('div', { 'data-testid': 'wavesurfer-player' });
+  }),
 }));
 
 describe('AudioPlayer', () => {

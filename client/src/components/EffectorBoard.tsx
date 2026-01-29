@@ -4,12 +4,13 @@ import {
   type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
 import {
   arrayMove,
-  horizontalListSortingStrategy,
+  rectSortingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
@@ -26,7 +27,17 @@ export function EffectorBoard({
   onEffectsChange,
 }: EffectorBoardProps) {
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px 動かさないとドラッグ開始しない
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200, // 200ms 長押しでドラッグ開始
+        tolerance: 5,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
@@ -68,7 +79,7 @@ export function EffectorBoard({
       >
         <SortableContext
           items={effects.map((e) => e.id)}
-          strategy={horizontalListSortingStrategy}
+          strategy={rectSortingStrategy}
         >
           <div className="effector-board">
             {effects.map((effect) => (

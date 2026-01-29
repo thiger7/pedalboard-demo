@@ -23,11 +23,19 @@ export function EffectorCard({ effect, onToggle }: EffectorCardProps) {
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const handleClick = () => {
+    if (!isDragging) {
+      onToggle(effect.id);
+    }
+  };
+
   return (
-    <div
+    <button
       ref={setNodeRef}
       style={style}
       className={`effector-card ${effect.enabled ? 'enabled' : 'disabled'}`}
+      onClick={handleClick}
+      type="button"
     >
       <div className="effector-drag-handle" {...attributes} {...listeners}>
         <img
@@ -37,17 +45,10 @@ export function EffectorCard({ effect, onToggle }: EffectorCardProps) {
           draggable={false}
         />
       </div>
+      <span className={`led-indicator ${effect.enabled ? 'on' : 'off'}`} />
       <div className="effector-info">
         <span className="effector-name">{effect.name}</span>
-        <label className="effector-toggle">
-          <input
-            type="checkbox"
-            checked={effect.enabled}
-            onChange={() => onToggle(effect.id)}
-          />
-          <span>{effect.enabled ? 'ON' : 'OFF'}</span>
-        </label>
       </div>
-    </div>
+    </button>
   );
 }

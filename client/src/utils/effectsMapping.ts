@@ -1,5 +1,11 @@
 import type { Effect } from '../types/effects';
 
+// 内部キーと表示名のマッピング
+export const EFFECT_DISPLAY_NAMES: Record<string, string> = {
+  Booster_Preamp: 'Booster / Preamp',
+  'SUPER OverDrive': 'SUPER Over Drive',
+};
+
 // 画像ファイル名とエフェクト名のマッピング
 export const EFFECT_IMAGES: Record<string, string> = {
   Booster_Preamp: '/images/generated/Booster_Preamp.png',
@@ -32,13 +38,14 @@ export const DEFAULT_PARAMS: Record<string, Record<string, number>> = {
 
 // 初期エフェクトリスト（未選択状態）
 export function createInitialEffects(): Effect[] {
-  return Object.entries(EFFECT_IMAGES).map(([name, image], index) => ({
+  return Object.entries(EFFECT_IMAGES).map(([key, image], index) => ({
     id: `effect-${index}`,
-    name,
+    name: EFFECT_DISPLAY_NAMES[key] || key,
+    apiName: key, // バックエンドAPI用のキー
     image,
     enabled: false,
-    params: { ...DEFAULT_PARAMS[name] },
-    defaultParams: { ...DEFAULT_PARAMS[name] },
+    params: { ...DEFAULT_PARAMS[key] },
+    defaultParams: { ...DEFAULT_PARAMS[key] },
   }));
 }
 
@@ -49,7 +56,7 @@ export function effectsToChain(
   return effects
     .filter((e) => e.enabled)
     .map((e) => ({
-      name: e.name,
+      name: e.apiName,
       params: e.params,
     }));
 }

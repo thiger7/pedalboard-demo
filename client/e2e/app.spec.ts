@@ -25,7 +25,7 @@ test.describe('Pedalboard Demo App', () => {
   });
 
   test('ページタイトルが表示される', async ({ page }) => {
-    await expect(page.locator('h1')).toHaveText('Pedalboard Demo');
+    await expect(page.locator('h1')).toHaveText('Pedalboard');
     await expect(page.locator('.app-header p')).toHaveText(
       'Guitar Effect Simulator',
     );
@@ -44,10 +44,10 @@ test.describe('Pedalboard Demo App', () => {
     await expect(page.locator('.effector-card').first()).toBeVisible();
   });
 
-  test('Process Audio ボタンが表示される', async ({ page }) => {
+  test('Apply Effects ボタンが表示される', async ({ page }) => {
     const button = page.locator('button.process-button');
     await expect(button).toBeVisible();
-    await expect(button).toHaveText('Process Audio');
+    await expect(button).toHaveText('Apply Effects');
   });
 
   test('ファイル未選択時は Process ボタンが無効', async ({ page }) => {
@@ -75,17 +75,18 @@ test.describe('エフェクト操作', () => {
 
   test('エフェクトをクリックでON/OFF切り替え', async ({ page }) => {
     const firstCard = page.locator('.effector-card').first();
-    const checkbox = firstCard.locator('input[type="checkbox"]');
 
-    // Get initial state
-    const initialChecked = await checkbox.isChecked();
+    // Get initial state (check for LED indicator)
+    const initialEnabled =
+      (await firstCard.locator('.led-indicator.on').count()) > 0;
 
-    // Click to toggle
-    await checkbox.click();
+    // Click card to toggle
+    await firstCard.click();
 
     // Verify state changed
-    const newChecked = await checkbox.isChecked();
-    expect(newChecked).not.toBe(initialChecked);
+    const newEnabled =
+      (await firstCard.locator('.led-indicator.on').count()) > 0;
+    expect(newEnabled).not.toBe(initialEnabled);
   });
 
   test('有効なエフェクトの数が表示される', async ({ page }) => {
@@ -133,11 +134,11 @@ test.describe('音声処理フロー (Local Mode)', () => {
       await select.selectOption(firstOption);
 
       // Enable at least one effect
-      const firstCheckbox = page
-        .locator('.effector-card input[type="checkbox"]')
-        .first();
-      if (!(await firstCheckbox.isChecked())) {
-        await firstCheckbox.click();
+      const firstCard = page.locator('.effector-card').first();
+      const isEnabled =
+        (await firstCard.locator('.led-indicator.on').count()) > 0;
+      if (!isEnabled) {
+        await firstCard.click();
       }
 
       // Click process button
@@ -146,7 +147,7 @@ test.describe('音声処理フロー (Local Mode)', () => {
       await processButton.click();
 
       // Wait for processing to complete (モックのため即座に完了する可能性がある)
-      await expect(processButton).toHaveText('Process Audio', {
+      await expect(processButton).toHaveText('Apply Effects', {
         timeout: 10000,
       });
       await expect(processButton).toBeEnabled();
@@ -235,11 +236,11 @@ test.describe('S3 モード (モック)', () => {
     await expect(page.locator('text=test.wav')).toBeVisible({ timeout: 5000 });
 
     // エフェクトを有効化
-    const firstCheckbox = page
-      .locator('.effector-card input[type="checkbox"]')
-      .first();
-    if (!(await firstCheckbox.isChecked())) {
-      await firstCheckbox.click();
+    const firstCard = page.locator('.effector-card').first();
+    const isEnabled =
+      (await firstCard.locator('.led-indicator.on').count()) > 0;
+    if (!isEnabled) {
+      await firstCard.click();
     }
 
     // Process ボタンが有効になる
@@ -250,7 +251,7 @@ test.describe('S3 モード (モック)', () => {
     await processButton.click();
 
     // 処理完了を待つ（モックのため処理は即座に完了する可能性がある）
-    await expect(processButton).toHaveText('Process Audio', { timeout: 10000 });
+    await expect(processButton).toHaveText('Apply Effects', { timeout: 10000 });
     await expect(processButton).toBeEnabled();
   });
 });

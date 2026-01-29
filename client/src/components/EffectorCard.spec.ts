@@ -28,6 +28,7 @@ vi.mock('@dnd-kit/utilities', () => ({
 const createMockEffect = (overrides?: Partial<Effect>): Effect => ({
   id: 'chorus-1',
   name: 'Chorus',
+  apiName: 'Chorus',
   image: '/images/chorus.png',
   enabled: true,
   params: { rate_hz: 1.0, depth: 0.5 },
@@ -60,27 +61,27 @@ describe('EffectorCard', () => {
     expect(img).toHaveAttribute('src', '/images/reverb.png');
   });
 
-  it('有効時は ON を表示する', () => {
-    render(
+  it('有効時はLEDインジケーターが点灯する', () => {
+    const { container } = render(
       createElement(EffectorCard, {
         effect: createMockEffect({ enabled: true }),
         onToggle: vi.fn(),
       }),
     );
-    expect(screen.getByText('ON')).toBeInTheDocument();
+    expect(container.querySelector('.led-indicator.on')).toBeInTheDocument();
   });
 
-  it('無効時は OFF を表示する', () => {
-    render(
+  it('無効時はLEDインジケーターが消灯する', () => {
+    const { container } = render(
       createElement(EffectorCard, {
         effect: createMockEffect({ enabled: false }),
         onToggle: vi.fn(),
       }),
     );
-    expect(screen.getByText('OFF')).toBeInTheDocument();
+    expect(container.querySelector('.led-indicator.off')).toBeInTheDocument();
   });
 
-  it('チェックボックスをクリックすると onToggle が呼ばれる', async () => {
+  it('カードをクリックすると onToggle が呼ばれる', async () => {
     const user = userEvent.setup();
     const onToggle = vi.fn();
     const effect = createMockEffect({ id: 'delay-1' });
@@ -92,7 +93,7 @@ describe('EffectorCard', () => {
       }),
     );
 
-    await user.click(screen.getByRole('checkbox'));
+    await user.click(screen.getByRole('button'));
     expect(onToggle).toHaveBeenCalledWith('delay-1');
   });
 

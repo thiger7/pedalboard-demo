@@ -1,6 +1,7 @@
 export interface Effect {
   id: string;
   name: string;
+  apiName: string; // バックエンドAPI用のキー
   image: string;
   enabled: boolean;
   params: Record<string, number>;
