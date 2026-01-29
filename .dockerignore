@@ -44,3 +44,4 @@ LICENSE
 Dockerfile
 compose.yaml
 renovate.json
+docs/techtalk/

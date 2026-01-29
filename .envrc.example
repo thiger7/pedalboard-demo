@@ -1,0 +1,19 @@
+# Load .env file if exists
+dotenv_if_exists
+
+# Node.js
+export NODE_ENV=development
+
+# Python
+export PYTHONDONTWRITEBYTECODE=1
+export PYTHONUNBUFFERED=1
+
+# AWS
+export AWS_PROFILE=your-profile
+export AWS_DEFAULT_REGION=ap-northeast-1
+export AWS_ACCOUNT_ID=123456789012
+
+# Infrastructure
+export CLOUDFRONT_DISTRIBUTION_ID=XXXXXXXXXXXXX
+export CLOUDFRONT_DOMAIN=xxxxx.cloudfront.net
+export API_GATEWAY_URL=https://xxxxx.execute-api.ap-northeast-1.amazonaws.com/
