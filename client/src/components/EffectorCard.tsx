@@ -30,25 +30,39 @@ export function EffectorCard({ effect, onToggle }: EffectorCardProps) {
   };
 
   return (
-    <button
+    <div
       ref={setNodeRef}
       style={style}
       className={`effector-card ${effect.enabled ? 'enabled' : 'disabled'}`}
-      onClick={handleClick}
-      type="button"
+      {...attributes}
+      {...listeners}
     >
-      <div className="effector-drag-handle" {...attributes} {...listeners}>
+      {/* Mobile drag handle */}
+      <div className="effector-drag-handle" aria-hidden="true">
+        <svg
+          viewBox="0 0 20 20"
+          width="20"
+          height="20"
+          fill="currentColor"
+          role="img"
+          aria-label="Drag handle"
+        >
+          <path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM13 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" />
+        </svg>
+      </div>
+      <button className="effector-content" onClick={handleClick} type="button">
         <img
           src={effect.image}
           alt={effect.name}
           className="effector-image"
           draggable={false}
+          loading="lazy"
         />
-      </div>
-      <span className={`led-indicator ${effect.enabled ? 'on' : 'off'}`} />
-      <div className="effector-info">
-        <span className="effector-name">{effect.name}</span>
-      </div>
-    </button>
+        <span className={`led-indicator ${effect.enabled ? 'on' : 'off'}`} />
+        <div className="effector-info">
+          <span className="effector-name">{effect.name}</span>
+        </div>
+      </button>
+    </div>
   );
 }

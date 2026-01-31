@@ -34,8 +34,8 @@ export function EffectorBoard({
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 200, // 200ms 長押しでドラッグ開始
-        tolerance: 5,
+        delay: 300, // 300ms 長押しでドラッグ開始
+        tolerance: 8, // 8px まで動いてもキャンセルしない
       },
     }),
     useSensor(KeyboardSensor, {

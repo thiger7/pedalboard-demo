@@ -165,21 +165,16 @@ body {
   background: linear-gradient(180deg, #3a3a3a 0%, #252525 100%);
   border-radius: 6px;
   overflow: hidden;
-  transition: all 0.2s;
   border: 2px solid #444;
-  cursor: pointer;
-  /* Reset button styles */
-  padding: 0;
-  font: inherit;
-  color: inherit;
-  text-align: inherit;
-  appearance: none;
-  width: 100%;
+  display: flex;
+  flex-direction: row;
+  transition:
+    all 0.3s ease,
+    transform 0.2s ease;
 }
 
 .effector-card:hover {
   border-color: #888;
-  transform: scale(1.03);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
@@ -193,23 +188,42 @@ body {
   filter: grayscale(30%);
 }
 
-.effector-card {
-  transition:
-    all 0.3s ease,
-    transform 0.2s ease;
-}
-
-.effector-card:active {
-  transform: scale(0.98);
-}
-
+/* Drag handle - hidden on desktop, shown on mobile */
 .effector-drag-handle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  color: #888;
   cursor: grab;
-  padding: 0.25rem;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  order: 1; /* Place on right side */
+}
+
+.effector-drag-handle:hover {
+  color: #f59e0b;
 }
 
 .effector-drag-handle:active {
   cursor: grabbing;
+}
+
+.effector-content {
+  flex: 1;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  display: flex;
+  flex-direction: column;
 }
 
 .effector-image {
@@ -238,7 +252,7 @@ body {
 .led-indicator {
   position: absolute;
   top: 6px;
-  right: 6px;
+  left: 6px;
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -466,8 +480,8 @@ body {
    5 → 4 → 3 → 2 → 1 columns
    =================== */
 
-/* Desktop (1024px+): 5 columns */
-@media (min-width: 1024px) {
+/* Desktop (1025px+): 4 columns */
+@media (min-width: 1025px) {
   .effector-board {
     grid-template-columns: repeat(4, 1fr);
   }
@@ -477,8 +491,8 @@ body {
   }
 }
 
-/* Tablet Landscape (768px - 1023px): 4 columns */
-@media (max-width: 1023px) and (min-width: 768px) {
+/* Tablet (768px - 1024px): 2 columns */
+@media (max-width: 1024px) and (min-width: 768px) {
   .app {
     padding: 0.5rem;
   }
@@ -488,7 +502,7 @@ body {
   }
 
   .effector-board {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.4rem;
   }
 
@@ -501,10 +515,75 @@ body {
   }
 }
 
-/* 767px以下: 波形の上下余白 */
+/* 1024px以下: タブレット・モバイル向けタッチ対応 */
+@media (max-width: 1024px) {
+  /* Show drag handle on touch devices */
+  .effector-drag-handle {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  /* Horizontal layout for tablet/mobile */
+  .effector-content {
+    touch-action: pan-y;
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem;
+  }
+
+  .effector-content .effector-image {
+    width: 80px;
+    height: 70px;
+    flex-shrink: 0;
+    /* Prevent image save on touch devices */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+  }
+
+  .effector-content .effector-info {
+    flex: 1;
+    text-align: left;
+  }
+
+  .effector-content .effector-name {
+    white-space: normal;
+    line-height: 1.2;
+  }
+}
+
+/* 767px以下: モバイル向け調整 */
 @media (max-width: 767px) {
   .audio-player-waveform {
     padding: 0.5rem 0;
+  }
+
+  /* Horizontal layout for mobile */
+  .effector-content {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem;
+    position: relative;
+  }
+
+  .effector-content .effector-image {
+    width: 70px;
+    height: 60px;
+    flex-shrink: 0;
+  }
+
+  .effector-content .effector-info {
+    flex: 1;
+    text-align: left;
+  }
+
+  .effector-content .effector-name {
+    font-size: 0.85rem;
+    white-space: normal; /* Allow text wrap */
+    line-height: 1.2;
   }
 }
 
@@ -534,7 +613,7 @@ body {
   }
 
   .effector-board {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.4rem;
   }
 
@@ -543,11 +622,7 @@ body {
   }
 
   .effector-name {
-    font-size: 0.6rem;
-  }
-
-  .effector-toggle {
-    font-size: 0.65rem;
+    font-size: 0.8rem;
   }
 
   .audio-section {
@@ -565,8 +640,9 @@ body {
   }
 }
 
-/* Large Mobile (480px - 599px): 2 columns */
-@media (max-width: 599px) and (min-width: 480px) {
+/* Large Mobile (600px - 767px): 2 columns - merged with tablet */
+@media (max-width: 599px) and (min-width: 600px) {
+  /* This range is now empty, keeping for reference */
   .app {
     padding: 0.4rem;
   }
@@ -646,8 +722,8 @@ body {
   }
 }
 
-/* Mobile (< 480px): 1 column */
-@media (max-width: 479px) {
+/* Mobile (< 600px): 1 column */
+@media (max-width: 599px) {
   .app {
     padding: 0.35rem;
   }

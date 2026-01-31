@@ -8,17 +8,17 @@ export const EFFECT_DISPLAY_NAMES: Record<string, string> = {
 
 // 画像ファイル名とエフェクト名のマッピング
 export const EFFECT_IMAGES: Record<string, string> = {
-  Booster_Preamp: '/images/generated/Booster_Preamp.png',
-  'Blues Driver': '/images/generated/Blues Driver.png',
-  'SUPER OverDrive': '/images/generated/SUPER OverDrive.png',
-  Distortion: '/images/generated/Distortion.png',
-  Fuzz: '/images/generated/Fuzz.png',
-  'Metal Zone': '/images/generated/Metal Zone.png',
-  'Heavy Metal': '/images/generated/Heavy Metal.png',
-  Chorus: '/images/generated/Chorus.png',
-  Dimension: '/images/generated/Dimension.png',
-  Vibrato: '/images/generated/Vibrato.png',
-  Delay: '/images/generated/Delay.png',
+  Booster_Preamp: '/images/generated/webp/Booster_Preamp.webp',
+  'Blues Driver': '/images/generated/webp/Blues Driver.webp',
+  'SUPER OverDrive': '/images/generated/webp/SUPER OverDrive.webp',
+  Distortion: '/images/generated/webp/Distortion.webp',
+  Fuzz: '/images/generated/webp/Fuzz.webp',
+  'Metal Zone': '/images/generated/webp/Metal Zone.webp',
+  'Heavy Metal': '/images/generated/webp/Heavy Metal.webp',
+  Chorus: '/images/generated/webp/Chorus.webp',
+  Dimension: '/images/generated/webp/Dimension.webp',
+  Vibrato: '/images/generated/webp/Vibrato.webp',
+  Delay: '/images/generated/webp/Delay.webp',
 };
 
 // デフォルトパラメータ（BOSS実機の音響特性に準拠）
